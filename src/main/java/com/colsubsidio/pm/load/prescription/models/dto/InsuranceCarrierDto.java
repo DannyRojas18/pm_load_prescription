@@ -1,0 +1,20 @@
+package com.colsubsidio.pm.load.prescription.models.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Data;
+
+/**
+ *
+ * @author Alberto Palencia Benedetti
+ */
+@Data
+@Builder
+public class InsuranceCarrierDto {
+    
+    @JsonProperty("nombre")
+    private String name;
+    
+    @JsonProperty("dispensador")
+    private String dispenser;
+}

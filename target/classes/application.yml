@@ -1,0 +1,187 @@
+## YAML Template.
+server:
+    port: 8090
+azure:
+    application-insights: #cd-test-insight
+        instrumentation-key: c8eb404e-8052-4e45-afa8-b2438f6d19eb
+spring:
+    application:
+        name: pm-load-prescription
+        version: 1.0.0
+    datasource:
+        url: jdbc:sqlserver://cols-arq-gerenciamedicamentos-server.database.windows.net:1433;database=arq-db-gerenciamedicamentos-qa;encrypt=false;trustServerCertificate=false;integratedSecurity=false;loginTimeout=30
+        username: pmuser
+        password: xK6W4adkz0ujfarHr5Mo
+        driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    jpa:
+        show-sql: false                
+        database-platform: org.hibernate.dialect.SQLServer2012Dialect
+        hibernate:
+          naming:
+            physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+            implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl        
+        properties:
+            hibernate:
+                jdbc:
+                  batch_versioned_data: true
+                  batch_size: 100
+                order_inserts: true
+                order_updates: true   
+                default_schema: pm
+                show_sql: true
+path:
+    config:
+       version: api/v1
+       prescription: medicamentos/prescripciones
+
+colsubsidio:
+    cum:
+        separator: '-'
+    rabbitmq:
+        host: 104.211.45.48
+        port: 5672
+        username: pmuser
+        password: 123456789!aA
+        virtual-host: colsubsidio.prescription
+        ssl:
+            enabled: false
+            port: 5671
+        recovery:
+            internal: 60000
+        amountConsumerLimit: 5
+        numConsumer: 1
+        autoAck: false
+        connection:
+            name: colsubsidio.prescriptionmanager
+            exchange: prescription.publish
+        process_info_user_fami:
+            exchange: exchange.process.info.fami
+            key: exchange.process.info.fami.key
+        process_info_user_neps:
+            exchange: exchange.process.info.neps
+            key: exchange.process.info.neps.key
+        process_info_user_oi:
+            exchange: exchange.process.info.oi
+            key: exchange.process.info.oi.key
+    token:
+      url: https://colsubsidio-prod.apigee.net/oauth/client_credential/accesstoken?grant_type=client_credentials
+      timeout: 15
+      clientid: giRLpOXG1OAISAhGsK5AzF5rgZb7cBRq
+      clientsecret: VMDynYAxIMN5qWAr
+      #clientid: AlA0qE0p6di46z92lAHLYkDDw9SJdeGo
+      #clientsecret: 0D8Og6PyG0ZgnGa2
+    parameters:
+        url:
+            addressing: https://as-technology-mock-response-test.azurewebsites.net/api/v1/mock/response/AddressingByMipres?prescripcion={0}
+neps:
+  attempt:
+      minutesmax: 60
+  serviceurl: https://as-technology-mock-response-test.azurewebsites.net/api/v1/mock/response/MedicamentosPrescripcionNeps
+  additionaldays: 30
+fami:
+  attempt:
+    minutesmax: 60
+  serviceurl: https://as-technology-mock-response-test.azurewebsites.net/api/v1/mock/response/MedicamentosPrescripcionFami
+oi:
+  attempt:
+    minutesmax: 60
+  serviceurl: https://as-technology-mock-response-test.azurewebsites.net/api/v1/mock/response/MedicamentosPrescripcionOI
+coom:
+  attempt:
+    minutesmax: 60
+  serviceurl: https://colsubsidio-prod.apigee.net/api/v2/medicamentos/prescripcion/coom?idPrescripcion={0}
+task:
+    executor:
+        corePoolSize: 100
+        queueCapacity: 10
+log:
+  level: TRACE
+  console: true
+---
+server:
+  port: 80
+azure:
+    application-insights:
+        instrumentation-key: 9334bb84-af28-4f3e-a177-56a9df15ca5a    
+spring:
+    profiles: release
+    application:
+        name: pm-load-prescription
+        version: 20250723.1-master
+    datasource:
+        url: jdbc:sqlserver://cop-sv-db-presmanager.database.windows.net:1433;database=cop-db-presmanager;encrypt=false;trustServerCertificate=false;integratedSecurity=false;loginTimeout=30
+        username: pmuser
+        password: F4.plp2!Up6SxPe#WnaXRDS
+        driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    jpa:
+        hibernate:
+          naming:
+            physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+            implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl      
+        database-platform: org.hibernate.dialect.SQLServer2012Dialect
+        properties:
+            hibernate:
+                default_schema: pm
+path:
+    config:
+       version: api/v1
+       prescription: medicamentos/prescripciones
+colsubsidio:
+    cum:
+        separator: ""
+    rabbitmq:
+        host: 52.226.255.214
+        port: 5672
+        username: prescription.user
+        password: gar$%$&#4h4398y703mg9
+        virtual-host: colsubsidio.prescription
+        ssl:
+            enabled: false
+            port: 5671
+        recovery:
+            internal: 60000
+        amountConsumerLimit: 5
+        numConsumer: 5
+        autoAck: false
+        connection:
+            name: colsubsidio.prescriptionmanager
+        process_info_user_fami:
+            exchange: ${EXCHANGE_PROCESS_INFO_FAMI:exchange.process.info.fami}
+            key: ${EXCHANGE_PROCESS_INFO_FAMI_KEY:exchange.process.info.fami.key}
+        process_info_user_neps:
+            exchange: ${EXCHANGE_PROCESS_INFO_NEPS:exchange.process.info.neps}
+            key: ${EXCHANGE_PROCESS_INFO_NEPS_KEY:exchange.process.info.neps.key}
+        process_info_user_oi:
+            exchange: exchange.process.info.oi
+            key: exchange.process.info.oi.key
+    token:
+      url: https://colsubsidio-prod.apigee.net/oauth/client_credential/accesstoken?grant_type=client_credentials
+      timeout: 15
+      clientid: giRLpOXG1OAISAhGsK5AzF5rgZb7cBRq
+      clientsecret: VMDynYAxIMN5qWAr
+    parameters:
+        url:
+            addressing: https://colsubsidio-prod.apigee.net/api/v1/medicamentos/mipres/direccionamientos/prescripcion/{0}
+neps:
+  attempt:
+      minutesmax: 60
+  serviceurl: https://colsubsidio-prod.apigee.net/api/v3/medicamentos/prescripcion/neps?idPrescripcion={0}
+  additionaldays: 30
+fami:
+  attempt:
+    minutesmax: 60
+  serviceurl: https://colsubsidio-prod.apigee.net/api/v2/medicamentos/prescripcion/fami?idPrescripcion={0}&noPreautoriza={1}&fechaInicial={2}&fechaFinal={3}&tipoId={4}&numId={5}
+coom:
+  attempt:
+    minutesmax: 60
+  serviceurl: https://colsubsidio-prod.apigee.net/api/v2/medicamentos/prescripcion/coom?idPrescripcion={0}
+oi:
+  attempt:
+    minutesmax: 60
+  serviceurl: https://as-technology-mock-response-test.azurewebsites.net/api/v1/mock/response/MedicamentosPrescripcionOI
+task:
+    executor:
+        corePoolSize: 100
+        queueCapacity: 10
+log:
+  level: TRACE

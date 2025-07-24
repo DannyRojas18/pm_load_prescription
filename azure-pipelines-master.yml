@@ -1,0 +1,30 @@
+# Pipeline de pm-load-prescription
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+    options: '-DskipTests'
+    sonarQubeRunAnalysis: false
+    mavenAuthenticateFeed: true
+- task: Docker@2
+  inputs:
+    containerRegistry: 'conn-registry-production'
+    repository: 'medicamentos/pm/load/prescription/back'
+    command: 'buildAndPush'
+    Dockerfile: 'Dockerfile'
+    buildContext: '.'
+    tags: '$(build.buildNumber)-prod'
